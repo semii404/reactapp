@@ -1,0 +1,47 @@
+{
+  "logindata": [
+    {
+      "email": "hello@gmail.com",
+      "password": "12345678",
+      "fullname": "hello",
+      "DOB": "1997-03-17",
+      "dobC": false,
+      "id": 1
+    },
+    {
+      "email": "birth@gmail.com",
+      "password": "12345678",
+      "fullname": "bithtest",
+      "DOB": "2023-03-17",
+      "dobC": true,
+      "id": 2
+    }
+  ],
+  "posts": [
+    {
+      "id": 2,
+      "title": "Fall of titan",
+      "author": "Heskel"
+    },
+    {
+      "id": 3,
+      "title": "Mahavira and His Teachings",
+      "author": "Tara Singh"
+    },
+    {
+      "id": 4,
+      "title": "Homage to Sravana Belgola",
+      "author": "Anand"
+    },
+    {
+      "id": 6,
+      "title": "Aspects of Jaina Art and Architecture",
+      "author": "Bhayani, H.  C"
+    },
+    {
+      "id": 8,
+      "title": "Sambodhi",
+      "author": "Bodh"
+    }
+  ]
+}
