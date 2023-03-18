@@ -1,4 +1,4 @@
-# Getting Started Create React App with CRUD Operations
+# Getting Started (Create React App with CRUD Operations)
 
 This is a project created with Create React App, which is a popular tool for setting up a new React project quickly. The project is a Redux-based React app that includes a thunk middleware for asynchronous actions, as well as login/logout functionality and basic CRUD operations.
 
