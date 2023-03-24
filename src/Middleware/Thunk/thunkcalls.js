@@ -1,12 +1,17 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { api1 } from '../../API/axios';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../../config/SDK';
 
 
 
 export const fetchPosts = createAsyncThunk('posts/fetchPosts', async () => {
   try {
-    const response = await api1.get('/posts');
-    return response.data;
+    const posts =await getDocs(collection(db,'posts'))
+    const values =posts.docs.map((key)=> {
+      const data = Object.assign(key.data(), {id:key.id});
+      return data;
+    });
+    return values
   } catch (error) {
     throw new Error(error.message);
   }

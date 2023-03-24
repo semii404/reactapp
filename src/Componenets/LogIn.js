@@ -1,35 +1,31 @@
 import React from 'react'
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Button,Form, Input, notification } from 'antd';
-import { api1 } from '../API/axios';
 import  {useDispatch} from 'react-redux'
 import { logIN } from '../Middleware/Thunk/thunkcalls';
 import { openNotification } from '../Helper/OpenNotiy';
+//firebase config
+import { collection, getDocs, query, where } from "firebase/firestore"; 
+import {db} from "../config/SDK"
 
 function LogIn() {
     const dispatch = useDispatch(); 
 
     const [api,contextHolder]=notification.useNotification();
     const onFinish =async (values) => {
-         await api1.get(`/logindata?q=${values.email}`).then((response)=>{
-
-           
-           if(response.data.length === 0){
-             openNotification(api,"Email Not Registered","warning")
-             return;
-            }
-            if(response.data[0].password === values.password){
-              delete response.data[0].password;
-              dispatch(logIN(response.data[0]));
-              
-            }
-            else{
-              
-              openNotification(api,"Email and Password are Incorrect","warning",3)
-            }
-          }).catch((err)=>{
-              openNotification(api,err.message,"warning",3)
-          })
+      const lq= await getDocs(query(collection(db, "users"), where("email", "==", values.email)))
+      if(lq.docs.length){
+        if(lq.docs[0].data().password === values.password){
+          delete lq.docs[0].data().password;
+          const data = Object.assign(lq.docs[0].data(), {id:lq.docs[0].id});
+          dispatch(logIN(data));
+        }else{
+          openNotification(api,"Email and password are incorrect", "warning");
+          return
+        }
+       }else{
+        openNotification(api,"Email Not Registered", "warning");
+       }
     };
     return (
     <Form

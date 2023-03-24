@@ -1,8 +1,9 @@
 import { Button, Divider, notification, Popconfirm, Popover, Space, Table, Typography } from 'antd';
+import { deleteDoc, doc } from 'firebase/firestore';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useLocation } from 'react-router-dom';
-import { api1 } from '../API/axios';
+import { db } from '../config/SDK';
 import { openNotification } from '../Helper/OpenNotiy';
 import { fetchPosts } from '../Middleware/Thunk/thunkcalls';
 import { loginSlice } from '../Store/Slices/sampleSlice';
@@ -17,24 +18,24 @@ const TableView = () => {
     const {state} = useLocation();
     const dispatch=useDispatch();
     
+    
     const logout = ()=>{
       dispatch(loginSlice.actions.logOut());
     }
    useEffect(() => {
-        dispatch(fetchPosts());
-     
+      dispatch(fetchPosts());
+      
         if(state != null){
           openNotification(api, state.s1, state.s2,3);
         }
       },[dispatch,state,api]);
   
   const { posts } = useSelector(state => state.posts);    
-  const removeItem=(id)=>{
-        api1.delete(`http://localhost:3002/posts/${id}`)
+  const removeItem=async (id)=>{
+        await deleteDoc(doc(db,"posts",id))
         .then(() => {
            dispatch(fetchPosts());
            openNotification(api,"Data Deleted Successfully","success",3)
-      
       })
       .catch((error) => {
         console.log(error);

@@ -1,12 +1,13 @@
 import { Button, Divider, Form, Input, notification, Space } from 'antd'
 import React, { useRef} from 'react'
 import { useDispatch } from 'react-redux';
-import { api1 } from '../API/axios';
 import {  fetchPosts } from '../Middleware/Thunk/thunkcalls';
 import { openNotification } from '../Helper/OpenNotiy';
 
 
 import './POPUP.css'
+import { addDoc, collection } from 'firebase/firestore';
+import { db } from '../config/SDK';
 
 
 const formItemLayout = {
@@ -55,8 +56,8 @@ function PopUp() {
 
     //adding new book
     const dispatch=useDispatch();
-    const onFinish = (values) => {
-        api1.post('/posts',values)
+    const onFinish =async (values) => {
+        await addDoc(collection(db,"posts"),values)
         .then(() => {
             dispatch(fetchPosts()); 
             form.resetFields();

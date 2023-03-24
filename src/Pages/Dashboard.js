@@ -1,10 +1,11 @@
 import { notification, Typography } from 'antd';
+import { doc, updateDoc } from 'firebase/firestore';
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { Navigate } from 'react-router-dom'
-import { api1 } from '../API/axios';
+
 import TableView from '../Componenets/TableView'
-import { logIN } from '../Middleware/Thunk/thunkcalls';
+import { db } from '../config/SDK';
 import { loginSlice } from '../Store/Slices/sampleSlice';
 
 
@@ -16,13 +17,11 @@ function Dashboard({isLoggedIn}) {
   const [api,contextHolder] = notification.useNotification();
   const dispatch=useDispatch();
 
-  //stting for next year login
-  const onClose = () => {
-   dispatch(loginSlice.actions.closedob())
-   api1.patch(`/logindata/${id}`, {dobC:true})
-   .then((res)=>{
-    dispatch(logIN(res.data))
-   }
+  //setting for next year login
+  const onClose =async () => {
+    await updateDoc(doc(db,"users",id),{dobC:true})
+    .then(
+      dispatch(loginSlice.actions.closedob())
    )
    .catch((err)=>{
     console.log(err);
@@ -44,9 +43,12 @@ function Dashboard({isLoggedIn}) {
   });
   };
 
-  const ctoF=()=>{
+  const ctoF=async ()=>{
     dispatch(loginSlice.actions.nextyear())
-     api1.patch(`/logindata/${id}`,{dobC:false})
+    await updateDoc(doc(db,"users",id),{dobC:false}).then(
+    ).catch((err)=>{
+      console.log(err)
+    })
   }
  
 

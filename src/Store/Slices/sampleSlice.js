@@ -28,12 +28,11 @@ export const postsSlice = createSlice({
         })
         .addCase(fetchPosts.fulfilled, (state, action) => {
           state.status = 'succeeded';
-         //temprary code 
+         //temprary code cause antd have bug in component 
           for (let index = 0; index < action.payload.length; index++) {
-            action.payload[index]['key']=`${index+1}`
+            action.payload[index]['key']=action.payload[index].id
           }
           state.posts = action.payload;
-          state.posts.reverse();
           state.error = 0;
         })
         .addCase(fetchPosts.rejected, (state, action) => {
@@ -59,8 +58,18 @@ export const postsSlice = createSlice({
     },
     reducers: {
       logOut: (state)=>{ state.isLoggedIn=false; localStorage.removeItem('auth') },
-      closedob:(state)=>{ state.dobC=true;},
-      nextyear:(state)=>{state.dobC=false;}
+      closedob:(state)=>{ 
+        state.dobC=true;   
+          const val = JSON.parse(localStorage.getItem('auth'))
+          val.dobC=true;
+          localStorage.setItem('auth', JSON.stringify(val));  
+        },
+      nextyear:(state)=>{
+        state.dobC=false;
+        const val = JSON.parse(localStorage.getItem('auth'))
+          val.dobC=false;
+          localStorage.setItem('auth', JSON.stringify(val));  
+      }
     },
     extraReducers: (builder) => {
       builder

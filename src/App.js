@@ -40,7 +40,7 @@ function App() {
     <Route path="/" element={
       isLoggedIn ? <Navigate to='/dashboard'/> :<LoginP/>}/>
     <Route path="/edit/:id" element={isLoggedIn? <EditData/>: <Navigate to='/' /> }/>
-    <Route path="/addnew" element={ <EditData/>}/>
+    <Route path="/addnew"  element={ isLoggedIn ? <EditData/> :<LoginP/>}/>
     <Route
            path="/dashboard"
            element={

@@ -1,7 +1,11 @@
 import React from 'react'
 import { Button,Form,Input, notification,} from 'antd';
-import { api1 } from '../API/axios';
 import { openNotification } from '../Helper/OpenNotiy';
+//firebase configs
+import { collection, addDoc, getDocs, query, where } from "firebase/firestore"; 
+import {db} from "../config/SDK"
+
+
 const formItemLayout = {
   labelCol: {
     xs: {
@@ -20,6 +24,7 @@ const formItemLayout = {
     },
   },
 };
+
 const tailFormItemLayout = {
   wrapperCol: {
     xs: {
@@ -33,28 +38,34 @@ const tailFormItemLayout = {
   },
 };
 
+
+
+
 function SignUp() {
-    
+  
   const [api,contextHolder] = notification.useNotification();
   const [form] = Form.useForm();
-    const onFinish = (values) => {
-        delete values.confirm
-           api1.get(`/logindata?email=${values.email}`)
-           .then((data)=>{
-            if(data.data.length !== 0){ openNotification(api,"User Already registered", "warning")}
-            else{
-              values['dobC']=false;
-            api1.post('/logindata',values).then(()=>{
-             openNotification(api,"Registerd Successfully","success")
-             form.resetFields();
-           }
-           )
-           .catch((err)=>{
-             openNotification(api,"Somthing Went wrong", "warning")
-           })
-            }
+    const onFinish =async (values) => {
+        delete values.confirm;
+        values["dobC"]=false;
+      const q= await getDocs(query(collection(db, "users"), where("email", "==", values.email)))
+      
+       if(q.docs.length){
+        openNotification(api,"User Already registered", "warning");
+       }else{
+       
+        await addDoc(collection(db, "users"), values)
+        .then(()=>{
+          openNotification(api,"Registration Complete", "success");
+          form.resetFields();
+        }
             
+        )
+        .catch((err)=>{
+            openNotification(api,"Somthing Went wrong", "warning")
+            console.log(err)
            })
+       }
     };
   return (
     <Form
@@ -143,7 +154,7 @@ function SignUp() {
       format="YYYY-MM-DD"
       label="Date Of Birth"
       >
-        <input type='date'/>
+        <Input type='date'/>
       </Form.Item>
       <Form.Item {...tailFormItemLayout}>
         <Button type="primary" htmlType="submit">

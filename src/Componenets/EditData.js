@@ -1,39 +1,43 @@
 import { Button, Form, Input, Space } from 'antd';
+import { doc, setDoc } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Link, useParams,useNavigate } from 'react-router-dom';
-import { api1 } from '../API/axios';
+import { db } from '../config/SDK';
+
 
 function EditUser() {
   const { id } = useParams();
   const [item, setUser] = useState(null);
   const navigate = useNavigate();
 
+  const { posts } = useSelector(state => state.posts); 
 
   useEffect( () => {
-   api1.get(`http://localhost:3002/posts/${id}`)
-  .then((response) => {
-    setUser(response.data);
-  })
-  .catch((error) => {
-    console.log(error);
-  });
-  }, [id]);
+    Object.keys(posts).find(keys=> {if(posts[keys]["id"]=== id) {
+      setUser(posts[keys]);
+    }})
+  },[]);
 
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
-    setUser((prevUser) => ({ ...prevUser, [name]: value }));
+    
+    setUser((prevUser) => ( { ...prevUser, [name]: value }));
   };
 
-    const handleSubmit = (event) => {
+    const handleSubmit =async (event) => {
         event.preventDefault();
-        api1.put(`http://localhost:3002/posts/${id}`,item)
-    .then(() => {
-       navigate('/dashboard',{state:{s1:'Post Edited Successfully',s2:'success'}})
+        await setDoc(doc(db,'posts',item.id),{
+          title:item.title,
+          author:item.author
+        })
+        .then(() => {
+        navigate('/dashboard',{state:{s1:'Post Edited Successfully',s2:'success'}})
     })
-    .catch((error) => {
-        console.log(error);
-    });
+     .catch((error) => {
+         console.log(error);
+     });
     };
 
 
